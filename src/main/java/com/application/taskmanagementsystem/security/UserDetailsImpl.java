@@ -14,12 +14,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 public class UserDetailsImpl implements UserDetails {
   private Long id;
   private String password;
-  private String username;
+  private String email;
   private String role;
 
   public static UserDetailsImpl build(User user) {
     return new UserDetailsImpl(
-        user.getId(), user.getPassword(), user.getUsername(), user.getRole());
+        user.getId(), user.getPassword(), user.getEmail(), user.getRole());
   }
 
   @Override
@@ -34,7 +34,7 @@ public class UserDetailsImpl implements UserDetails {
 
   @Override
   public String getUsername() {
-    return username;
+    return email;
   }
 
   @Override

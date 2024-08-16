@@ -4,15 +4,20 @@ import com.application.taskmanagementsystem.model.dto.ResponseError;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Обработчик исключения контроллеров. */
 @RestControllerAdvice
@@ -62,5 +67,17 @@ public class ControllerExceptionHandler {
   public ResponseError handleAllExceptions(RuntimeException ex, WebRequest request) {
     log.error("Error 500: Internal Server Error");
     return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+  }
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseError handleInvalidArgument(MethodArgumentNotValidException ex){
+    StringBuilder errorMessageBuilder = new StringBuilder();
+    ex.getBindingResult().getFieldErrors().forEach(error -> {
+      errorMessageBuilder.append(error.getDefaultMessage())
+              .append("; ");
+    });
+    String errorMessage = errorMessageBuilder.toString().trim();
+    log.error("Error 400: Bad Request");
+    return new ResponseError(HttpStatus.BAD_REQUEST, errorMessage);
   }
 }

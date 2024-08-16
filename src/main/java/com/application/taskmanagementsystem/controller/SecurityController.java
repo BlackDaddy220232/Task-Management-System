@@ -7,6 +7,7 @@ import com.application.taskmanagementsystem.service.SecurityService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +23,12 @@ public class SecurityController {
   }
 
   @PostMapping("/signup")
-  ResponseEntity<String> signup(@RequestBody SignUpRequest signUpRequest) {
+  ResponseEntity<String> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
     return ResponseEntity.ok(securityService.register(signUpRequest));
   }
 
   @PostMapping("/signin")
-  public String signin(@RequestBody SignInRequest signInRequest, HttpServletResponse response) {
+  public String signin(@RequestBody @Valid SignInRequest signInRequest, HttpServletResponse response) {
     String token = securityService.login(signInRequest);
     Cookie cookie = new Cookie("token", token);
     cookie.setHttpOnly(true);

@@ -1,13 +1,11 @@
 package com.application.taskmanagementsystem.service;
 
 
-import com.application.taskmanagementsystem.dao.CountryRepository;
 import com.application.taskmanagementsystem.dao.UserRepository;
 import com.application.taskmanagementsystem.exception.UnauthorizedException;
 import com.application.taskmanagementsystem.model.dto.PasswordRequest;
 import com.application.taskmanagementsystem.model.dto.SignInRequest;
 import com.application.taskmanagementsystem.model.dto.SignUpRequest;
-import com.application.taskmanagementsystem.model.entity.Country;
 import com.application.taskmanagementsystem.model.entity.User;
 import com.application.taskmanagementsystem.security.JwtCore;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,8 +30,6 @@ public class SecurityService {
   private AuthenticationManager authenticationManager;
   private JwtCore jwtCore;
 
-  private CountryRepository countryRepository;
-
   @Autowired
   public void setUserRepository(UserRepository userRepository) {
     this.userRepository = userRepository;
@@ -54,36 +50,22 @@ public class SecurityService {
     this.jwtCore = jwtCore;
   }
 
-  @Autowired
-  public void setCountyRepository(CountryRepository countyRepository) {
-    this.countryRepository = countyRepository;
-  }
 
   public String register(SignUpRequest signUpRequest) {
-    if (userRepository.existsUserByUsername(signUpRequest.getUsername()).booleanValue()) {
+    if (userRepository.existsUserByEmail(signUpRequest.getEmail()).booleanValue()) {
       throw new UnauthorizedException(
-          String.format("Nickname \"%s\" is busy (((", signUpRequest.getUsername()));
+          String.format("Nickname \"%s\" is busy (((", signUpRequest.getEmail()));
     }
     User user = new User();
-    user.setUsername(signUpRequest.getUsername());
+    user.setEmail(signUpRequest.getEmail());
     user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-    Country country =
-        countryRepository
-            .findCountryByCountryName(signUpRequest.getCountry())
-            .orElseGet(
-                () -> {
-                  Country newCountry = new Country();
-                  newCountry.setCountryName(signUpRequest.getCountry());
-                  return countryRepository.save(newCountry);
-                });
-    user.setCountry(country);
     user.setRole("ROLE_USER");
     userRepository.save(user);
     Authentication authentication = null;
     authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                signUpRequest.getUsername(), signUpRequest.getPassword()));
+                signUpRequest.getEmail(), signUpRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return jwtCore.generateToken(authentication);
   }
@@ -102,7 +84,7 @@ public class SecurityService {
     return (jwtCore.generateToken(authentication));
   }
 
-  public String changePassword(PasswordRequest passwordRequest, HttpServletRequest request) {
+  public void changePassword(PasswordRequest passwordRequest, HttpServletRequest request) {
     String authorizationHeader = request.getHeader("Authorization");
     String token;
     if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
@@ -113,12 +95,11 @@ public class SecurityService {
     String username = jwtCore.getNameFromJwt(token);
     User user =
         userRepository
-            .findUserByUsername(username)
+            .findUserByEmail(username)
             .orElseThrow(
                 () ->
                     new UsernameNotFoundException(String.format("User '%s' not found", username)));
     user.setPassword(passwordEncoder.encode(passwordRequest.getPassword()));
     userRepository.save(user);
-    return username;
   }
 }

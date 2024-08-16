@@ -1,6 +1,5 @@
 package com.application.taskmanagementsystem.service;
 
-
 import com.application.taskmanagementsystem.dao.UserRepository;
 import com.application.taskmanagementsystem.exception.UnauthorizedException;
 import com.application.taskmanagementsystem.exception.UserTakenException;
@@ -51,13 +50,17 @@ public class SecurityService {
     this.jwtCore = jwtCore;
   }
 
-
   public String register(SignUpRequest signUpRequest) {
-    if (userRepository.existsUserByEmail(signUpRequest.getEmail()).booleanValue()) {
+    if (userRepository.existsUserByEmail(signUpRequest.getEmail()).booleanValue()){
       throw new UserTakenException(
-          String.format("Nickname \"%s\" is busy (((", signUpRequest.getEmail()));
+          String.format("Email \"%s\" is busy ", signUpRequest.getEmail()));
+    }
+    else if(userRepository.existsUserByUsername(signUpRequest.getUsername()).booleanValue()){
+      throw new UserTakenException(
+              String.format("Nickname \"%s\" is busy ", signUpRequest.getUsername()));
     }
     User user = new User();
+    user.setUsername(signUpRequest.getUsername());
     user.setEmail(signUpRequest.getEmail());
     user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
     user.setRole("ROLE_USER");
@@ -66,7 +69,7 @@ public class SecurityService {
     authentication =
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                signUpRequest.getEmail(), signUpRequest.getPassword()));
+                signUpRequest.getUsername(), signUpRequest.getPassword()));
     SecurityContextHolder.getContext().setAuthentication(authentication);
     return jwtCore.generateToken(authentication);
   }
@@ -96,7 +99,7 @@ public class SecurityService {
     String username = jwtCore.getNameFromJwt(token);
     User user =
         userRepository
-            .findUserByEmail(username)
+            .findUserByUsername(username)
             .orElseThrow(
                 () ->
                     new UsernameNotFoundException(String.format("User '%s' not found", username)));

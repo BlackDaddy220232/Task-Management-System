@@ -10,6 +10,8 @@ import lombok.Data;
 @Data
 @Builder
 public class SignUpRequest {
+  @NotBlank(message = "username shouldn't be null")
+  private String username;
   @Email(message = "wrong format of email")
   @NotBlank(message = "email shouldn't be null")
   private String email;

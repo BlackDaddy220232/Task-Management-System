@@ -76,7 +76,7 @@ public class SecurityService {
       authentication =
           authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
-                  signInRequest.getUsername(), signInRequest.getPassword()));
+                  signInRequest.getEmail(), signInRequest.getPassword()));
     } catch (BadCredentialsException e) {
       throw new UnauthorizedException("Wrong password or login");
     }

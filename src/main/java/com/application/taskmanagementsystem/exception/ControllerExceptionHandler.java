@@ -4,7 +4,6 @@ import com.application.taskmanagementsystem.model.dto.ResponseError;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -16,16 +15,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /** Обработчик исключения контроллеров. */
 @RestControllerAdvice
 @Slf4j
 public class ControllerExceptionHandler {
   @ExceptionHandler({InsufficientAuthenticationException.class})
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public ResponseError handleInsufflicientException(Exception ex, WebRequest request) {
+  public ResponseError handleInsufficientException(Exception ex, WebRequest request) {
     return new ResponseError(HttpStatus.UNAUTHORIZED, ex.getMessage());
   }
 
@@ -79,5 +75,11 @@ public class ControllerExceptionHandler {
     String errorMessage = errorMessageBuilder.toString().trim();
     log.error("Error 400: Bad Request");
     return new ResponseError(HttpStatus.BAD_REQUEST, errorMessage);
+  }
+  @ExceptionHandler({UserTakenException.class})
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ResponseError handleConflictExceptions(Exception ex, WebRequest request) {
+    log.error("Error 409: Conflict");
+    return new ResponseError(HttpStatus.CONFLICT, ex.getMessage());
   }
 }

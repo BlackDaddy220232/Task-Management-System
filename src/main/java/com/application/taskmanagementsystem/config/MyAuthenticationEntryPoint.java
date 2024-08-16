@@ -31,7 +31,7 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
       throws IOException, ServletException {
     WebRequest webRequest = new ServletWebRequest(request);
     ResponseError error =
-        controllerExceptionHandler.handleInsufflicientException(authException, webRequest);
+        controllerExceptionHandler.handleInsufficientException(authException, webRequest);
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
     response.setContentType("application/json");

@@ -3,6 +3,7 @@ package com.application.taskmanagementsystem.service;
 
 import com.application.taskmanagementsystem.dao.UserRepository;
 import com.application.taskmanagementsystem.exception.UnauthorizedException;
+import com.application.taskmanagementsystem.exception.UserTakenException;
 import com.application.taskmanagementsystem.model.dto.PasswordRequest;
 import com.application.taskmanagementsystem.model.dto.SignInRequest;
 import com.application.taskmanagementsystem.model.dto.SignUpRequest;
@@ -53,7 +54,7 @@ public class SecurityService {
 
   public String register(SignUpRequest signUpRequest) {
     if (userRepository.existsUserByEmail(signUpRequest.getEmail()).booleanValue()) {
-      throw new UnauthorizedException(
+      throw new UserTakenException(
           String.format("Nickname \"%s\" is busy (((", signUpRequest.getEmail()));
     }
     User user = new User();

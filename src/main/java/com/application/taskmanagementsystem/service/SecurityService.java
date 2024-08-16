@@ -80,7 +80,7 @@ public class SecurityService {
       authentication =
           authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
-                  signInRequest.getEmail(), signInRequest.getPassword()));
+                  userRepository.findUserByEmail(signInRequest.getEmail()).get().getUsername(), signInRequest.getPassword()));
     } catch (BadCredentialsException e) {
       throw new UnauthorizedException("Wrong password or login");
     }

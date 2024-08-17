@@ -1,5 +1,6 @@
 package com.application.taskmanagementsystem.model.dto;
 
+import com.application.taskmanagementsystem.model.enumeration.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,5 +18,6 @@ public class SignUpRequest {
   private String email;
   @NotBlank(message = "password shouldn't be null")
   private String password;
-
+  @NotNull(message = "Role shouldn't be null")
+  private Role role;
 }

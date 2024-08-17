@@ -3,6 +3,7 @@ package com.application.taskmanagementsystem.security;
 import java.util.Collection;
 
 import com.application.taskmanagementsystem.model.entity.User;
+import com.application.taskmanagementsystem.model.enumeration.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,16 +16,16 @@ public class UserDetailsImpl implements UserDetails {
   private Long id;
   private String password;
   private String username;
-  private String role;
+  private Role role;
 
   public static UserDetailsImpl build(User user) {
     return new UserDetailsImpl(
-        user.getId(), user.getPassword(), user.getUsername(),user.getRole());
+        user.getId(), user.getPassword(), user.getUsername(),user.getRole()); //тут
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return AuthorityUtils.createAuthorityList(getRole());
+    return AuthorityUtils.createAuthorityList((getRole().toString())); //тут
   }
 
   @Override

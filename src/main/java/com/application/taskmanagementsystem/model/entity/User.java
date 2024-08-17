@@ -1,5 +1,6 @@
 package com.application.taskmanagementsystem.model.entity;
 
+import com.application.taskmanagementsystem.model.enumeration.Role;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -21,12 +22,13 @@ public class User {
   @Column private String username;
   @Column private String email;
   @Column private String password;
-  @Column private String role;
+  @Enumerated(EnumType.STRING)
+  @Column private Role role;
 
   @OneToMany(
           mappedBy = "user",
           fetch=FetchType.EAGER,
-          cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
+          cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
   )
   private Set<Task> taskSet= new HashSet<>();
 }

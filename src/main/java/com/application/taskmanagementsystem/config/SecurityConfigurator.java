@@ -75,9 +75,7 @@ public class SecurityConfigurator {
                       CorsConfiguration configuration = new CorsConfiguration();
                       configuration.setAllowedOrigins(
                           List.of(
-                              "http://localhost:8080",
-                              "http://localhost:3000/",
-                              "http://localhost:3000/stats"));
+                              "http://localhost:8080"));
                       configuration.setAllowedMethods(
                           Arrays.asList("GET", "POST", "PUT", "DELETE")); // Разрешенные методы
                       configuration.setAllowedHeaders(
@@ -95,13 +93,8 @@ public class SecurityConfigurator {
                     .requestMatchers("/auth/**", "/users/getAllUsers")
                     .permitAll()
                     .requestMatchers(
-                        "/countries/**",
-                        "/users/deleteUser",
-                        "/users/getUserByUsername",
-                        "/users/addCity")
-                    .fullyAuthenticated()
-                    .anyRequest()
-                    .permitAll())
+                        "/user/task")
+                    .hasAuthority("EMPLOYER"))
         .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

@@ -63,7 +63,7 @@ public class SecurityService {
     user.setUsername(signUpRequest.getUsername());
     user.setEmail(signUpRequest.getEmail());
     user.setPassword(passwordEncoder.encode(signUpRequest.getPassword()));
-    user.setRole("ROLE_USER");
+    user.setRole(signUpRequest.getRole());
     userRepository.save(user);
     Authentication authentication = null;
     authentication =

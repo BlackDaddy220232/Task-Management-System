@@ -21,6 +21,11 @@ public class Task {
     private Priority priority;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "employer_id")
+    private User employer;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="employee_id")
+    private User employee;
+
 }

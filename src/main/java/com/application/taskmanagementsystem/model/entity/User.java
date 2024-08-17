@@ -26,7 +26,7 @@ public class User {
   @Column private Role role;
 
   @OneToMany(
-          mappedBy = "user",
+          mappedBy = "employer",
           fetch=FetchType.EAGER,
           cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
   )

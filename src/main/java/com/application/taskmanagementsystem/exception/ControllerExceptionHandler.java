@@ -39,7 +39,8 @@ public class ControllerExceptionHandler {
 
   @ExceptionHandler({
     NoHandlerFoundException.class,
-    UsernameNotFoundException.class,
+    UserNotFoundException.class,
+          TaskNotFoundException.class,
   })
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ResponseError handleNoResourceFoundException(RuntimeException ex, WebRequest request) {
@@ -80,7 +81,7 @@ public class ControllerExceptionHandler {
     log.error("Error 400: Bad Request");
     return new ResponseError(HttpStatus.BAD_REQUEST, errorMessage);
   }
-  @ExceptionHandler({UserTakenException.class})
+  @ExceptionHandler({UserTakenException.class, TaskTakenException.class})
   @ResponseStatus(HttpStatus.CONFLICT)
   public ResponseError handleConflictExceptions(Exception ex, WebRequest request) {
     log.error("Error 409: Conflict");

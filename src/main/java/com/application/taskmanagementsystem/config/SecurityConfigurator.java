@@ -90,7 +90,7 @@ public class SecurityConfigurator {
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/auth/**")
+                    .requestMatchers("/task/all","/auth/**","/user/tasks")
                     .permitAll()
                     .requestMatchers(
                         "/user/task","/user/task/employee","/user/allEmployees")

@@ -33,7 +33,7 @@ public class UserService implements UserDetailsService {
   private static final String TASK_CREATED = "Task \"%s\"  has been created successfully";
   private static final String TASK_NOT_FOUND = "Task with this id has not found!";
   private static final String USER_NOT_FOUND = "User with this id has not found!";
-  private static final String TASK_ALREADY_EXISTS="Task \"%s\" already exists for this user";
+  private static final String TASK_ALREADY_EXISTS = "Task \"%s\" already exists for this user";
   private static final String ACCOMPLISHED_APPOINTMENT =
       "Employee successfully has been appointed!";
 
@@ -57,14 +57,17 @@ public class UserService implements UserDetailsService {
   }
 
   public String createTask(TaskRequest taskRequest, HttpServletRequest request) {
-    User user = userRepository.findUserByUsername(jwtCore.getNameFromJwt(request))
+    User user =
+        userRepository
+            .findUserByUsername(jwtCore.getNameFromJwt(request))
             .orElseThrow(() -> new UserNotFoundException("User not found"));
 
     if (taskRepository.existsByTitleAndEmployer(taskRequest.getTitle(), user)) {
-      throw new TaskTakenException(String.format(TASK_ALREADY_EXISTS,taskRequest.getTitle()));
+      throw new TaskTakenException(String.format(TASK_ALREADY_EXISTS, taskRequest.getTitle()));
     }
 
-    Task task = Task.builder()
+    Task task =
+        Task.builder()
             .title(taskRequest.getTitle())
             .description(taskRequest.getDefinition())
             .priority(taskRequest.getPriority())
@@ -74,6 +77,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(TASK_CREATED, task.getTitle());
   }
+
   public String appointEmployee(Long taskId, Long employeeId, HttpServletRequest request) {
     Task task = getTaskByIdAndEmployer(taskId, request);
     User employee = getUserByIdAndRole(employeeId, Role.EMPLOYEE);
@@ -81,24 +85,30 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(ACCOMPLISHED_APPOINTMENT);
   }
-  public List<User> getAllEmployees(){
+
+  public List<User> getAllEmployees() {
     return userRepository.getAllByRole(Role.EMPLOYEE);
+  }
+  public List<Task> getUserTasks(HttpServletRequest request){
+    return taskRepository.findTasksByUser(getUserByUsername(jwtCore.getNameFromJwt(request)));
   }
 
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {
     User employer = getUserByUsername(jwtCore.getNameFromJwt(request));
-    return taskRepository.findTaskByIdAndEmployer(taskId, employer)
-            .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
+    return taskRepository
+        .findTaskByIdAndEmployer(taskId, employer)
+        .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
   }
 
   private User getUserByIdAndRole(Long userId, Role role) {
-    return userRepository.findUserByIdAndRole(userId, role)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+    return userRepository
+        .findUserByIdAndRole(userId, role)
+        .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
   }
 
   private User getUserByUsername(String username) {
-    return userRepository.findUserByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
+    return userRepository
+        .findUserByUsername(username)
+        .orElseThrow(() -> new UserNotFoundException("User not found"));
   }
-
 }

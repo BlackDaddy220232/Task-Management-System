@@ -1,6 +1,7 @@
 package com.application.taskmanagementsystem.model.entity;
 
 import com.application.taskmanagementsystem.model.enumeration.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import lombok.*;
@@ -27,8 +28,9 @@ public class User {
 
   @OneToMany(
           mappedBy = "employer",
-          fetch=FetchType.EAGER,
+          fetch = FetchType.EAGER,
           cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}
   )
+  @JsonIgnore
   private Set<Task> taskSet= new HashSet<>();
 }

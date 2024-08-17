@@ -96,7 +96,7 @@ public class SecurityService {
     } else {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
     }
-    String username = jwtCore.getNameFromJwt(token);
+    String username = jwtCore.getNameFromJwt(request);
     User user =
         userRepository
             .findUserByUsername(username)

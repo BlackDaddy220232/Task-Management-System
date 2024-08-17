@@ -4,6 +4,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Date;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -29,17 +31,20 @@ public class JwtCore {
         .compact();
   }
 
-  public String getTokenFromRequest(String authorizationHeader) {
-    String token;
-    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-      token = authorizationHeader.substring(7);
-    } else {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+  public String getTokenFromRequest(HttpServletRequest request) {
+    Cookie[] cookies = request.getCookies();
+    if (cookies != null) {
+      for (Cookie cookie : cookies) {
+        if (cookie.getName().equals("token")) {
+          return cookie.getValue();
+        }
+      }
     }
-    return token;
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Access token not found in cookies");
   }
 
-  public String getNameFromJwt(String token) {
+  public String getNameFromJwt(HttpServletRequest request) {
+    String token=getTokenFromRequest(request);
     return Jwts.parser().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
   }
 }

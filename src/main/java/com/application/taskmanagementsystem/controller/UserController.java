@@ -18,8 +18,17 @@ public class UserController {
     }
 
   @PostMapping("/task")
-  public ResponseEntity<Object> createTask(@Valid @RequestBody TaskRequest taskRequest, HttpServletRequest request) {
-        return ResponseEntity.ok(userService.createTask(taskRequest,request));
+  public ResponseEntity<Object> createTask(
+          @Valid @RequestBody TaskRequest taskRequest, HttpServletRequest request) {
+    return ResponseEntity.ok(userService.createTask(taskRequest, request));
+  }
+  @PostMapping("/task/employee")
+  public ResponseEntity<Object> appointEmployee(@RequestParam Long taskId, Long employeeId,HttpServletRequest request){
+        return ResponseEntity.ok(userService.appointEmployee(taskId,employeeId,request));
+  }
+  @GetMapping("/allEmployees")
+  public ResponseEntity<Object> getAllEmployees(){
+        return ResponseEntity.ok(userService.getAllEmployees());
   }
 
 }

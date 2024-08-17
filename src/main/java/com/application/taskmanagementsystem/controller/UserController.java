@@ -38,4 +38,8 @@ public class UserController {
     public ResponseEntity<Object> getUserTasks(HttpServletRequest request){
     return ResponseEntity.ok(userService.getUserTasks(request));
   }
+  @GetMapping("/{id}/tasks")
+  public ResponseEntity<Object> getTasksByUserID(@PathVariable Long id){
+    return ResponseEntity.ok(userService.getTasksByUserId(id));
+  }
 }

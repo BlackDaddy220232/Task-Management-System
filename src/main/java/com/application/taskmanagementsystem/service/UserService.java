@@ -89,8 +89,16 @@ public class UserService implements UserDetailsService {
   public List<User> getAllEmployees() {
     return userRepository.getAllByRole(Role.EMPLOYEE);
   }
-  public List<Task> getUserTasks(HttpServletRequest request){
+
+  public List<Task> getUserTasks(HttpServletRequest request) {
     return taskRepository.findTasksByUser(getUserByUsername(jwtCore.getNameFromJwt(request)));
+  }
+
+  public List<Task> getTasksByUserId(Long id) {
+    return taskRepository.findTasksByUser(
+        userRepository
+            .findUserById(id)
+            .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND))));
   }
 
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {

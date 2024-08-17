@@ -1,8 +1,10 @@
 package com.application.taskmanagementsystem.controller;
 
+import com.application.taskmanagementsystem.model.dto.CommentDTO;
 import com.application.taskmanagementsystem.model.dto.TaskRequest;
 import com.application.taskmanagementsystem.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -41,5 +43,9 @@ public class UserController {
   @GetMapping("/{id}/tasks")
   public ResponseEntity<Object> getTasksByUserID(@PathVariable Long id){
     return ResponseEntity.ok(userService.getTasksByUserId(id));
+  }
+  @PostMapping("/task/{id}/comment")
+  public ResponseEntity<Object> createComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, HttpServletRequest request){
+    return ResponseEntity.ok(userService.createComment(id,commentDTO,request));
   }
 }

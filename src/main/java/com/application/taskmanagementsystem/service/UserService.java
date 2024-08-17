@@ -1,11 +1,14 @@
 package com.application.taskmanagementsystem.service;
 
+import com.application.taskmanagementsystem.dao.CommentRepository;
 import com.application.taskmanagementsystem.dao.TaskRepository;
 import com.application.taskmanagementsystem.dao.UserRepository;
 import com.application.taskmanagementsystem.exception.TaskNotFoundException;
 import com.application.taskmanagementsystem.exception.TaskTakenException;
 import com.application.taskmanagementsystem.exception.UserNotFoundException;
+import com.application.taskmanagementsystem.model.dto.CommentDTO;
 import com.application.taskmanagementsystem.model.dto.TaskRequest;
+import com.application.taskmanagementsystem.model.entity.Comment;
 import com.application.taskmanagementsystem.model.entity.Task;
 import com.application.taskmanagementsystem.model.entity.User;
 import com.application.taskmanagementsystem.model.enumeration.Role;
@@ -20,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -29,20 +33,26 @@ public class UserService implements UserDetailsService {
   private JwtCore jwtCore;
   private final UserRepository userRepository;
   private final TaskRepository taskRepository;
+  private final CommentRepository commentRepository;
   private static final String USER_NOT_FOUND_MESSAGE = "User with name \"%s\" already exists";
   private static final String TASK_CREATED = "Task \"%s\"  has been created successfully";
   private static final String TASK_NOT_FOUND = "Task with this id has not found!";
   private static final String USER_NOT_FOUND = "User with this id has not found!";
   private static final String TASK_ALREADY_EXISTS = "Task \"%s\" already exists for this user";
+  private static final String COMMENT_PUBLISHED = "Comment has been published!";
   private static final String ACCOMPLISHED_APPOINTMENT =
       "Employee successfully has been appointed!";
 
   @Autowired
   public UserService(
-      UserRepository userRepository, TaskRepository taskRepository, JwtCore jwtCore) {
+      UserRepository userRepository,
+      TaskRepository taskRepository,
+      JwtCore jwtCore,
+      CommentRepository commentRepository) {
     this.userRepository = userRepository;
     this.taskRepository = taskRepository;
     this.jwtCore = jwtCore;
+    this.commentRepository = commentRepository;
   }
 
   @Override
@@ -101,6 +111,18 @@ public class UserService implements UserDetailsService {
             .orElseThrow(() -> new UserNotFoundException(String.format(USER_NOT_FOUND))));
   }
 
+  public String createComment(Long taskId, CommentDTO commentDTO, HttpServletRequest request) {
+    Comment comment =
+        Comment.builder()
+            .time(LocalDateTime.now())
+            .content(commentDTO.getContent())
+            .author(jwtCore.getNameFromJwt(request))
+            .task(getTaskById(taskId))
+            .build();
+    commentRepository.save(comment);
+    return String.format(COMMENT_PUBLISHED);
+  }
+
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {
     User employer = getUserByUsername(jwtCore.getNameFromJwt(request));
     return taskRepository
@@ -118,5 +140,11 @@ public class UserService implements UserDetailsService {
     return userRepository
         .findUserByUsername(username)
         .orElseThrow(() -> new UserNotFoundException("User not found"));
+  }
+
+  private Task getTaskById(Long id) {
+    return taskRepository
+        .findById(id)
+        .orElseThrow(() -> new TaskNotFoundException(String.format(TASK_NOT_FOUND)));
   }
 }

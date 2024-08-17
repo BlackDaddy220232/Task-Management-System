@@ -4,6 +4,9 @@ import com.application.taskmanagementsystem.model.enumeration.Priority;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tasks")
 @Getter
@@ -27,5 +30,7 @@ public class Task {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="employee_id")
     private User employee;
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    private List<Comment> comments = new ArrayList<>();
 
 }

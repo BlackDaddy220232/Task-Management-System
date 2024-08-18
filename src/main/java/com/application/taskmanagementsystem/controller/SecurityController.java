@@ -40,7 +40,7 @@ public class SecurityController {
 
   @PatchMapping("/editPassword")
   public ResponseEntity<String> editPassword(
-          @RequestBody PasswordRequest passwordRequest, HttpServletRequest request) {
+          @Valid @RequestBody PasswordRequest passwordRequest, HttpServletRequest request) {
     securityService.changePassword(passwordRequest, request);
     return ResponseEntity.ok("Password was successfully updated");
   }

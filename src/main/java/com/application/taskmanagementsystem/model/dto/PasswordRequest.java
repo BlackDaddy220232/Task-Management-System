@@ -1,8 +1,14 @@
 package com.application.taskmanagementsystem.model.dto;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
+@NoArgsConstructor
 public class PasswordRequest {
+  @NotBlank(message = "password shouldn`t be null")
   private String password;
 }

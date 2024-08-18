@@ -4,8 +4,6 @@ import com.application.taskmanagementsystem.model.enumeration.Priority;
 import com.application.taskmanagementsystem.model.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.ArrayList;
 import java.util.List;

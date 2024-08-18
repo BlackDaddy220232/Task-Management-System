@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -57,7 +58,7 @@ public class ControllerExceptionHandler {
     return new ResponseError(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage());
   }
 
-  @ExceptionHandler({ExpiredJwtException.class, AccessDeniedException.class})
+  @ExceptionHandler({ExpiredJwtException.class, AccessDeniedException.class,UnauthorizedException.class})
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public ResponseError handleUnauthorizedException(RuntimeException ex, WebRequest request) {
     log.error("Error 403: Forbidden");
@@ -74,10 +75,10 @@ public class ControllerExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseError handleInvalidArgument(MethodArgumentNotValidException ex){
     StringBuilder errorMessageBuilder = new StringBuilder();
-    ex.getBindingResult().getFieldErrors().forEach(error -> {
-      errorMessageBuilder.append(error.getDefaultMessage())
-              .append("; ");
-    });
+    ex.getBindingResult().getFieldErrors().forEach(error ->
+            errorMessageBuilder.append(error.getDefaultMessage())
+                    .append("; ")
+    );
     String errorMessage = errorMessageBuilder.toString().trim();
     log.error("Error 400: Bad Request");
     return new ResponseError(HttpStatus.BAD_REQUEST, errorMessage);
@@ -101,11 +102,11 @@ public class ControllerExceptionHandler {
       errorMessage="Field cannot be empty";
     }
     log.error("Error 400: Bad request");
-    return new ResponseError(HttpStatus.BAD_REQUEST,String.format("Invalid argument: "+errorMessage));
+    return new ResponseError(HttpStatus.BAD_REQUEST, String.format("Invalid argument: %s", errorMessage));
   }
-  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseError handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+  public ResponseError handleTypeMismatch(Exception ex) {
     log.error("Error 400: Bad request");
     return new ResponseError(HttpStatus.BAD_REQUEST, "Invalid argument!");
   }

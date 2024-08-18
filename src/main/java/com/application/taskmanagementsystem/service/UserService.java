@@ -13,13 +13,19 @@ import com.application.taskmanagementsystem.model.dto.UpdateTaskDTO;
 import com.application.taskmanagementsystem.model.entity.Comment;
 import com.application.taskmanagementsystem.model.entity.Task;
 import com.application.taskmanagementsystem.model.entity.User;
+import com.application.taskmanagementsystem.model.enumeration.Priority;
 import com.application.taskmanagementsystem.model.enumeration.Role;
+import com.application.taskmanagementsystem.model.enumeration.Status;
 import com.application.taskmanagementsystem.security.JwtCore;
 import com.application.taskmanagementsystem.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +35,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 @Service
 @Transactional
@@ -104,10 +111,19 @@ public class UserService implements UserDetailsService {
   public List<Task> getUserTasks(HttpServletRequest request) {
     return taskRepository.findTasksByUser(getUserByUsername(request));
   }
-
-  public List<Task> getTasksByUserId(Long id) {
+  public Page<Task> getTaskByUserId(Long id, Integer offset, Integer limit, Status status, Priority priority){
     User user = getUserById(id);
-    return taskRepository.findTasksByUser(user);
+    Pageable pageable = PageRequest.of(offset, limit);
+
+    if (priority != null && status != null) {
+      return taskRepository.findTasksByUserAndPriorityAndStatus(user, priority, status, pageable);
+    } else if (priority != null) {
+      return taskRepository.findTasksByUserAndPriority(user, priority, pageable);
+    } else if (status != null) {
+      return taskRepository.findTasksByUserAndStatus(user, status, pageable);
+    } else {
+      return taskRepository.findTasksByUser(user, pageable);
+    }
   }
 
   public String createComment(Long taskId, CommentDTO commentDTO, HttpServletRequest request) {

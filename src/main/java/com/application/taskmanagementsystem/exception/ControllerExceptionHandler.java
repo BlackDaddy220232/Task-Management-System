@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.nio.file.AccessDeniedException;
@@ -102,4 +103,11 @@ public class ControllerExceptionHandler {
     log.error("Error 400: Bad request");
     return new ResponseError(HttpStatus.BAD_REQUEST,String.format("Invalid argument: "+errorMessage));
   }
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseError handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+    log.error("Error 400: Bad request");
+    return new ResponseError(HttpStatus.BAD_REQUEST, "Invalid argument!");
+  }
+
 }

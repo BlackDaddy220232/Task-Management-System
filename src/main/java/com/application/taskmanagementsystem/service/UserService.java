@@ -22,6 +22,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -77,7 +80,7 @@ public class UserService implements UserDetailsService {
             .map(UserDetailsImpl::build)
             .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, username)));
   }
-
+  @Cacheable(key = "#taskRequest.title")
   public String createTask(TaskRequest taskRequest, HttpServletRequest request) {
     User user = getUserByUsername(request);
     if (taskRepository.existsByTitleAndEmployer(taskRequest.getTitle(), user)) {
@@ -95,7 +98,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(TASK_CREATED, task.getTitle());
   }
-
+  @CachePut(key = "#taskId")
   public String appointEmployee(Long taskId, Long employeeId, HttpServletRequest request) {
     Task task = getTaskByIdAndEmployer(taskId, request);
     User employee = getUserByIdAndRole(employeeId, Role.EMPLOYEE);
@@ -103,14 +106,15 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return ACCOMPLISHED_APPOINTMENT;
   }
-
+  @Cacheable(key = "'employees'")
   public List<User> getAllEmployees() {
     return userRepository.getAllByRole(Role.EMPLOYEE);
   }
-
+  @Cacheable(key = "#request.remoteUser")
   public List<Task> getUserTasks(HttpServletRequest request) {
     return taskRepository.findTasksByUser(getUserByUsername(request));
   }
+  @Cacheable(key = "#id")
   public Page<Task> getTaskByUserId(Long id, Integer offset, Integer limit, Status status, Priority priority){
     User user = getUserById(id);
     Pageable pageable = PageRequest.of(offset, limit);
@@ -125,7 +129,7 @@ public class UserService implements UserDetailsService {
       return taskRepository.findTasksByUser(user, pageable);
     }
   }
-
+  @Cacheable(key = "#commentDTO.content")
   public String createComment(Long taskId, CommentDTO commentDTO, HttpServletRequest request) {
     Task task = getTaskById(taskId);
     Comment comment = Comment.builder()
@@ -144,7 +148,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(STATUS_CHANGED, status.getStatus().toString());
   }
-
+  @CachePut(key = "#id")
   public String editTask(Long id, UpdateTaskDTO updateTaskDTO, HttpServletRequest request) {
     Task task = getTaskByIdAndUser(id, request);
     updateIfPresent(updateTaskDTO.getTitle(), task::setTitle);
@@ -154,7 +158,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return TASK_CHANGED;
   }
-
+  @CacheEvict(key = "#id")
   public String deleteTask(Long id, HttpServletRequest request) {
     Task task = getTaskByIdAndUser(id, request);
     User user = getUserByUsername(request);

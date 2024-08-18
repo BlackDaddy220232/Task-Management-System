@@ -90,10 +90,10 @@ public class SecurityConfigurator {
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/task/all","/auth/**","/user/tasks","user/{id}/tasks","user/task/{id}/comment")
+                    .requestMatchers("/task/all","/auth/**","/user/tasks","user/{id}/tasks","user/task/{id}/comment","/user/task/{id}/status")
                     .permitAll()
                     .requestMatchers(
-                        "/user/task","/user/task/employee","/user/allEmployees")
+                        "/user/task","/user/task/employee","/user/allEmployees","user/task/{id}")
                     .hasAuthority("EMPLOYER"))
         .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();

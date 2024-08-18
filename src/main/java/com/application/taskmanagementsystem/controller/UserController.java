@@ -1,7 +1,10 @@
 package com.application.taskmanagementsystem.controller;
 
 import com.application.taskmanagementsystem.model.dto.CommentDTO;
+import com.application.taskmanagementsystem.model.dto.StatusDTO;
 import com.application.taskmanagementsystem.model.dto.TaskRequest;
+import com.application.taskmanagementsystem.model.dto.UpdateTaskDTO;
+import com.application.taskmanagementsystem.model.enumeration.Status;
 import com.application.taskmanagementsystem.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,5 +50,13 @@ public class UserController {
   @PostMapping("/task/{id}/comment")
   public ResponseEntity<Object> createComment(@PathVariable Long id, @Valid @RequestBody CommentDTO commentDTO, HttpServletRequest request){
     return ResponseEntity.ok(userService.createComment(id,commentDTO,request));
+  }
+  @PatchMapping("/task/{id}/status")
+  public ResponseEntity<Object> changeStatus(@PathVariable Long id, @Valid @RequestBody StatusDTO status, HttpServletRequest request) {
+    return ResponseEntity.ok(userService.changeStatus(id, status, request));
+  }
+  @PatchMapping("/task/{id}")
+  public ResponseEntity<Object> editTask(@PathVariable Long id, @RequestBody UpdateTaskDTO updateTaskDTO, HttpServletRequest request){
+    return ResponseEntity.ok(userService.editTask(id, updateTaskDTO,request));
   }
 }

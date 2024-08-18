@@ -1,6 +1,7 @@
 package com.application.taskmanagementsystem.model.entity;
 
 import com.application.taskmanagementsystem.model.enumeration.Priority;
+import com.application.taskmanagementsystem.model.enumeration.Status;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Task {
     private String title;
     private String description;
     private Priority priority;
+    private Status status;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "employer_id")

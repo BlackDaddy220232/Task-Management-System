@@ -17,5 +17,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("SELECT t FROM Task t WHERE t.employer = :user OR t.employee = :user")
     List<Task> findTasksByUser(User user);
 
+    @Query("SELECT t FROM Task t WHERE (t.employer = :user OR t.employee = :user) AND t.id = :id")
+    Optional<Task> findTaskByUserAndId(User user, Long id);
+
     Optional<Task> getTaskById(Long id);
 }

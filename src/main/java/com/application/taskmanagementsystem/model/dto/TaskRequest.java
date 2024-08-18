@@ -1,6 +1,7 @@
 package com.application.taskmanagementsystem.model.dto;
 
 import com.application.taskmanagementsystem.model.enumeration.Priority;
+import com.application.taskmanagementsystem.model.enumeration.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
@@ -20,6 +21,8 @@ public class TaskRequest {
     @NotNull(message = "priority should`t be null")
     @Enumerated(EnumType.ORDINAL)
     Priority priority;
+    @NotNull(message = "status shouldn`t be null")
+    Status status;
 
 
 }

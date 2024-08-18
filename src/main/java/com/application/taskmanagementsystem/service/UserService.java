@@ -7,11 +7,14 @@ import com.application.taskmanagementsystem.exception.TaskNotFoundException;
 import com.application.taskmanagementsystem.exception.TaskTakenException;
 import com.application.taskmanagementsystem.exception.UserNotFoundException;
 import com.application.taskmanagementsystem.model.dto.CommentDTO;
+import com.application.taskmanagementsystem.model.dto.StatusDTO;
 import com.application.taskmanagementsystem.model.dto.TaskRequest;
+import com.application.taskmanagementsystem.model.dto.UpdateTaskDTO;
 import com.application.taskmanagementsystem.model.entity.Comment;
 import com.application.taskmanagementsystem.model.entity.Task;
 import com.application.taskmanagementsystem.model.entity.User;
 import com.application.taskmanagementsystem.model.enumeration.Role;
+import com.application.taskmanagementsystem.model.enumeration.Status;
 import com.application.taskmanagementsystem.security.JwtCore;
 import com.application.taskmanagementsystem.security.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 @Service
 @Transactional
@@ -40,6 +45,8 @@ public class UserService implements UserDetailsService {
   private static final String USER_NOT_FOUND = "User with this id has not found!";
   private static final String TASK_ALREADY_EXISTS = "Task \"%s\" already exists for this user";
   private static final String COMMENT_PUBLISHED = "Comment has been published!";
+  private static final String STATUS_CHANGED="Status successfully changed to \"%s\"";
+  private static final String TASK_CNANGED="Task successfully changed";
   private static final String ACCOMPLISHED_APPOINTMENT =
       "Employee successfully has been appointed!";
 
@@ -82,6 +89,7 @@ public class UserService implements UserDetailsService {
             .description(taskRequest.getDefinition())
             .priority(taskRequest.getPriority())
             .employer(user)
+            .status(taskRequest.getStatus())
             .build();
 
     taskRepository.save(task);
@@ -122,12 +130,30 @@ public class UserService implements UserDetailsService {
     commentRepository.save(comment);
     return String.format(COMMENT_PUBLISHED);
   }
-
+  public String changeStatus(Long taskId, StatusDTO status, HttpServletRequest request){
+    getTaskByIdAndUser(taskId,request).setStatus(status.getStatus());
+    return String.format(STATUS_CHANGED,status.getStatus().toString());
+  }
+  public String editTask(Long id, UpdateTaskDTO updateTaskDTO,HttpServletRequest request) {
+    Task task = getTaskByIdAndUser(id,request);
+    updateIfPresent(updateTaskDTO.getTitle(), task::setTitle);
+    updateIfPresent(updateTaskDTO.getDescription(), task::setDescription);
+    updateIfPresent(updateTaskDTO.getStatus(), task::setStatus);
+    updateIfPresent(updateTaskDTO.getPriority(), task::setPriority);
+    taskRepository.save(task);
+    return String.format(TASK_CNANGED);
+  }
+  private <T> void updateIfPresent(T value, Consumer<T> setter) {
+    Optional.ofNullable(value).ifPresent(setter);
+  }
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {
     User employer = getUserByUsername(jwtCore.getNameFromJwt(request));
     return taskRepository
         .findTaskByIdAndEmployer(taskId, employer)
         .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
+  }
+  private Task getTaskByIdAndUser(Long id, HttpServletRequest request){
+    return taskRepository.findTaskByUserAndId(getUserByUsername(jwtCore.getNameFromJwt(request)),id).orElseThrow(()->new TaskNotFoundException(TASK_NOT_FOUND));
   }
 
   private User getUserByIdAndRole(Long userId, Role role) {

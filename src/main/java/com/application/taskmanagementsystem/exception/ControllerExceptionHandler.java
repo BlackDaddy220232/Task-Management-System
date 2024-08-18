@@ -90,12 +90,17 @@ public class ControllerExceptionHandler {
   }
   @ExceptionHandler({HttpMessageNotReadableException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseError handleNotReadableExceptions(Exception ex, WebRequest request){
+  public ResponseError handleNotReadableExceptions(HttpMessageNotReadableException ex, WebRequest request){
     Pattern pattern = Pattern.compile("\\[(.*?)]");
     Matcher matcher = pattern.matcher(ex.getMessage());
-    matcher.find();
-    String errorMessage=matcher.group(1);
+    String errorMessage;
+    if(matcher.find()){
+      errorMessage=matcher.group(1);
+    }
+    else {
+      errorMessage="Field cannot be empty";
+    }
     log.error("Error 400: Bad request");
-    return new ResponseError(HttpStatus.BAD_REQUEST,String.format("Wrong option, use one of this: "+errorMessage));
+    return new ResponseError(HttpStatus.BAD_REQUEST,String.format("Invalid argument: "+errorMessage));
   }
 }

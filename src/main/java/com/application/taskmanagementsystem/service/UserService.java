@@ -47,7 +47,8 @@ public class UserService implements UserDetailsService {
   private static final String COMMENT_PUBLISHED = "Comment has been published!";
   private static final String STATUS_CHANGED="Status successfully changed to \"%s\"";
   private static final String TASK_CNANGED="Task successfully changed";
-  private static final String ACCOMPLISHED_APPOINTMENT =
+  private static final String TASK_DELETED="Task successfully deleted"
+;  private static final String ACCOMPLISHED_APPOINTMENT =
       "Employee successfully has been appointed!";
 
   @Autowired
@@ -109,7 +110,7 @@ public class UserService implements UserDetailsService {
   }
 
   public List<Task> getUserTasks(HttpServletRequest request) {
-    return taskRepository.findTasksByUser(getUserByUsername(jwtCore.getNameFromJwt(request)));
+    return taskRepository.findTasksByUser(getUserByUsername(request));
   }
 
   public List<Task> getTasksByUserId(Long id) {
@@ -143,17 +144,25 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(TASK_CNANGED);
   }
+  public String deleteTask(Long id, HttpServletRequest request){
+    Task task=getTaskByIdAndUser(id,request);
+    User user=getUserByUsername(request);
+    user.getTaskSet().remove(task);
+    userRepository.save(user);
+    taskRepository.delete(task);
+    return String.format(TASK_DELETED);
+  }
   private <T> void updateIfPresent(T value, Consumer<T> setter) {
     Optional.ofNullable(value).ifPresent(setter);
   }
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {
-    User employer = getUserByUsername(jwtCore.getNameFromJwt(request));
+    User employer = getUserByUsername(request);
     return taskRepository
         .findTaskByIdAndEmployer(taskId, employer)
         .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
   }
   private Task getTaskByIdAndUser(Long id, HttpServletRequest request){
-    return taskRepository.findTaskByUserAndId(getUserByUsername(jwtCore.getNameFromJwt(request)),id).orElseThrow(()->new TaskNotFoundException(TASK_NOT_FOUND));
+    return taskRepository.findTaskByUserAndId(getUserByUsername(request),id).orElseThrow(()->new TaskNotFoundException(TASK_NOT_FOUND));
   }
 
   private User getUserByIdAndRole(Long userId, Role role) {
@@ -162,9 +171,9 @@ public class UserService implements UserDetailsService {
         .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
   }
 
-  private User getUserByUsername(String username) {
+  private User getUserByUsername(HttpServletRequest request) {
     return userRepository
-        .findUserByUsername(username)
+        .findUserByUsername(jwtCore.getNameFromJwt(request))
         .orElseThrow(() -> new UserNotFoundException("User not found"));
   }
 

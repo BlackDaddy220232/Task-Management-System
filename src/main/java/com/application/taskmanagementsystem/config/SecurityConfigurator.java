@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -73,9 +74,7 @@ public class SecurityConfigurator {
                 cors.configurationSource(
                     request -> {
                       CorsConfiguration configuration = new CorsConfiguration();
-                      configuration.setAllowedOrigins(
-                          List.of(
-                              "http://localhost:8080"));
+                      configuration.setAllowedOrigins(List.of("http://localhost:8080"));
                       configuration.setAllowedMethods(
                           Arrays.asList("GET", "POST", "PUT", "DELETE")); // Разрешенные методы
                       configuration.setAllowedHeaders(
@@ -90,11 +89,30 @@ public class SecurityConfigurator {
         .authorizeHttpRequests(
             authorize ->
                 authorize
-                    .requestMatchers("/task/all","/auth/**","/user/tasks","user/{id}/tasks","user/task/{id}/comment","/user/task/{id}/status")
+                    .requestMatchers(HttpMethod.POST, "/auth/signup", "auth/signin")
                     .permitAll()
-                    .requestMatchers(
-                        "/user/task","/user/task/employee","/user/allEmployees","user/task/{id}")
-                    .hasAuthority("EMPLOYER"))
+                    .requestMatchers(HttpMethod.PATCH, "/auth/editPassword")
+                        .permitAll()
+                        .requestMatchers(HttpMethod.POST,"/user/task")
+                        .hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.POST,"/user/task/employee")
+                        .hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.GET,"/user/allEmployees")
+                        .hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.GET, "/task/all")
+                        .fullyAuthenticated()
+                        .requestMatchers(HttpMethod.GET,"/user/tasks")
+                        .fullyAuthenticated()
+                        .requestMatchers(HttpMethod.GET,"/user/{id}/tasks")
+                        .fullyAuthenticated()
+                        .requestMatchers(HttpMethod.POST,"/user/task/{id}/comment")
+                        .fullyAuthenticated()
+                        .requestMatchers(HttpMethod.PATCH,"/user/task/{id}/status")
+                        .fullyAuthenticated()
+                        .requestMatchers(HttpMethod.PATCH,"/user/task/{id}")
+                        .hasAuthority("EMPLOYER")
+                        .requestMatchers(HttpMethod.DELETE,"/user/task/{id}")
+                        .hasAuthority("EMPLOYER"))
         .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }

@@ -59,4 +59,8 @@ public class UserController {
   public ResponseEntity<Object> editTask(@PathVariable Long id, @RequestBody UpdateTaskDTO updateTaskDTO, HttpServletRequest request){
     return ResponseEntity.ok(userService.editTask(id, updateTaskDTO,request));
   }
+  @DeleteMapping("/task/{id}")
+  public ResponseEntity<Object> deleteTask(@PathVariable Long id,HttpServletRequest request){
+    return ResponseEntity.ok(userService.deleteTask(id,request));
+  }
 }

@@ -16,6 +16,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,9 +25,9 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ControllerExceptionHandler {
   @ExceptionHandler({InsufficientAuthenticationException.class})
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public ResponseError handleInsufficientException(Exception ex, WebRequest request) {
-    return new ResponseError(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    return new ResponseError(HttpStatus.FORBIDDEN, ex.getMessage());
   }
 
   @ExceptionHandler({HttpClientErrorException.class})
@@ -56,11 +57,11 @@ public class ControllerExceptionHandler {
     return new ResponseError(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage());
   }
 
-  @ExceptionHandler({ExpiredJwtException.class, UnauthorizedException.class})
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  @ExceptionHandler({ExpiredJwtException.class, AccessDeniedException.class})
+  @ResponseStatus(HttpStatus.FORBIDDEN)
   public ResponseError handleUnauthorizedException(RuntimeException ex, WebRequest request) {
-    log.error("Error 401: Unauthorized");
-    return new ResponseError(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    log.error("Error 403: Forbidden");
+    return new ResponseError(HttpStatus.FORBIDDEN, ex.getMessage());
   }
 
   @ExceptionHandler({RuntimeException.class})

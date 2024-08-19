@@ -57,14 +57,15 @@ public class UserService implements UserDetailsService {
   private static final String STATUS_CHANGED = "Status successfully changed to \"%s\"";
   private static final String TASK_CHANGED = "Task successfully changed";
   private static final String TASK_DELETED = "Task successfully deleted";
-  private static final String ACCOMPLISHED_APPOINTMENT = "Employee successfully has been appointed!";
+  private static final String ACCOMPLISHED_APPOINTMENT =
+      "Employee successfully has been appointed!";
 
   @Autowired
   public UserService(
-          UserRepository userRepository,
-          TaskRepository taskRepository,
-          JwtCore jwtCore,
-          CommentRepository commentRepository) {
+      UserRepository userRepository,
+      TaskRepository taskRepository,
+      JwtCore jwtCore,
+      CommentRepository commentRepository) {
     this.userRepository = userRepository;
     this.taskRepository = taskRepository;
     this.jwtCore = jwtCore;
@@ -74,10 +75,12 @@ public class UserService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     return userRepository
-            .findUserByUsername(username)
-            .map(UserDetailsImpl::build)
-            .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, username)));
+        .findUserByUsername(username)
+        .map(UserDetailsImpl::build)
+        .orElseThrow(
+            () -> new UsernameNotFoundException(String.format(USER_NOT_FOUND_MESSAGE, username)));
   }
+
   @Cacheable(key = "#taskRequest.title")
   public String createTask(TaskRequest taskRequest, HttpServletRequest request) {
     User user = getUserByUsername(request);
@@ -85,7 +88,8 @@ public class UserService implements UserDetailsService {
       throw new TaskTakenException(String.format(TASK_ALREADY_EXISTS, taskRequest.getTitle()));
     }
 
-    Task task = Task.builder()
+    Task task =
+        Task.builder()
             .title(taskRequest.getTitle())
             .description(taskRequest.getDefinition())
             .priority(taskRequest.getPriority())
@@ -96,6 +100,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(TASK_CREATED, task.getTitle());
   }
+
   @CachePut(key = "#taskId")
   public String appointEmployee(Long taskId, Long employeeId, HttpServletRequest request) {
     Task task = getTaskByIdAndEmployer(taskId, request);
@@ -104,16 +109,20 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return ACCOMPLISHED_APPOINTMENT;
   }
+
   @Cacheable(key = "'employees'")
   public List<User> getAllEmployees() {
     return userRepository.getAllByRole(Role.EMPLOYEE);
   }
+
   @Cacheable(key = "#request.remoteUser")
   public List<Task> getUserTasks(HttpServletRequest request) {
     return taskRepository.findTasksByUser(getUserByUsername(request));
   }
+
   @Cacheable(key = "#id")
-  public Page<Task> getTaskByUserId(Long id, Integer offset, Integer limit, Status status, Priority priority){
+  public Page<Task> getTaskByUserId(
+      Long id, Integer offset, Integer limit, Status status, Priority priority) {
     User user = getUserById(id);
     Pageable pageable = PageRequest.of(offset, limit);
 
@@ -127,10 +136,12 @@ public class UserService implements UserDetailsService {
       return taskRepository.findTasksByUser(user, pageable);
     }
   }
+
   @Cacheable(key = "#commentDTO.content")
   public String createComment(Long taskId, CommentDTO commentDTO, HttpServletRequest request) {
     Task task = getTaskById(taskId);
-    Comment comment = Comment.builder()
+    Comment comment =
+        Comment.builder()
             .time(LocalDateTime.now())
             .content(commentDTO.getContent())
             .author(jwtCore.getNameFromJwt(request))
@@ -146,6 +157,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return String.format(STATUS_CHANGED, status.getStatus().toString());
   }
+
   @CachePut(key = "#id")
   public String editTask(Long id, UpdateTaskDTO updateTaskDTO, HttpServletRequest request) {
     Task task = getTaskByIdAndUser(id, request);
@@ -156,6 +168,7 @@ public class UserService implements UserDetailsService {
     taskRepository.save(task);
     return TASK_CHANGED;
   }
+
   @CacheEvict(key = "#id")
   public String deleteTask(Long id, HttpServletRequest request) {
     Task task = getTaskByIdAndUser(id, request);
@@ -173,39 +186,37 @@ public class UserService implements UserDetailsService {
   private Task getTaskByIdAndEmployer(Long taskId, HttpServletRequest request) {
     User employer = getUserByUsername(request);
     return taskRepository
-            .findTaskByIdAndEmployer(taskId, employer)
-            .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
+        .findTaskByIdAndEmployer(taskId, employer)
+        .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
   }
 
   private Task getTaskByIdAndUser(Long id, HttpServletRequest request) {
     User user = getUserByUsername(request);
     return taskRepository
-            .findTaskByUserAndId(user, id)
-            .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
+        .findTaskByUserAndId(user, id)
+        .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
   }
 
   private User getUserByIdAndRole(Long userId, Role role) {
     return userRepository
-            .findUserByIdAndRole(userId, role)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        .findUserByIdAndRole(userId, role)
+        .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
   }
 
   private User getUserByUsername(HttpServletRequest request) {
     String username = jwtCore.getNameFromJwt(request);
     return userRepository
-            .findUserByUsername(username)
-            .orElseThrow(() -> new UserNotFoundException("User not found"));
+        .findUserByUsername(username)
+        .orElseThrow(() -> new UserNotFoundException("User not found"));
   }
 
   private User getUserById(Long id) {
     return userRepository
-            .findUserById(id)
-            .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
+        .findUserById(id)
+        .orElseThrow(() -> new UserNotFoundException(USER_NOT_FOUND));
   }
 
   private Task getTaskById(Long id) {
-    return taskRepository
-            .findById(id)
-            .orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
+    return taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException(TASK_NOT_FOUND));
   }
 }

@@ -38,20 +38,23 @@ public class TokenFilter extends OncePerRequestFilter {
     UserDetails userDetails = null;
     UsernamePasswordAuthenticationToken auth = null;
 
-    if (!(request.getRequestURI().equals("/auth/signin"))
-        && !(request.getRequestURI().equals("/auth/signup"))) {
-        try {
-          username = jwtCore.getNameFromJwt(request);
-          if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            userDetails = userDetailsService.loadUserByUsername(username);
-            auth =
-                new UsernamePasswordAuthenticationToken(
-                    userDetails, null, userDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(auth);
-          }
-        } catch (Exception e) {
-          log.error("Invalid JWT token");
+    String uri = request.getRequestURI();
+    if (!(uri.equals("/auth/signin"))
+            && !(uri.equals("/auth/signup"))
+            && !(uri.startsWith("/swagger"))
+            && !(uri.startsWith("/v3/api-docs")))  {
+      try {
+        username = jwtCore.getNameFromJwt(request);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+          userDetails = userDetailsService.loadUserByUsername(username);
+          auth =
+              new UsernamePasswordAuthenticationToken(
+                  userDetails, null, userDetails.getAuthorities());
+          SecurityContextHolder.getContext().setAuthentication(auth);
         }
+      } catch (Exception e) {
+        log.error("Invalid JWT token");
+      }
     }
     filterChain.doFilter(request, response);
   }

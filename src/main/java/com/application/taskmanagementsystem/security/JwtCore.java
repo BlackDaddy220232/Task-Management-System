@@ -44,7 +44,7 @@ public class JwtCore {
   }
 
   public String getNameFromJwt(HttpServletRequest request) {
-    String token=getTokenFromRequest(request);
+    String token = getTokenFromRequest(request);
     return Jwts.parser().setSigningKey(secret).build().parseClaimsJws(token).getBody().getSubject();
   }
 }

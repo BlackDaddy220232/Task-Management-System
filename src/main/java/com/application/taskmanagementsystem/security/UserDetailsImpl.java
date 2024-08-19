@@ -20,12 +20,12 @@ public class UserDetailsImpl implements UserDetails {
 
   public static UserDetailsImpl build(User user) {
     return new UserDetailsImpl(
-        user.getId(), user.getPassword(), user.getUsername(),user.getRole()); //тут
+        user.getId(), user.getPassword(), user.getUsername(), user.getRole()); // тут
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return AuthorityUtils.createAuthorityList((getRole().toString())); //тут
+    return AuthorityUtils.createAuthorityList((getRole().toString())); // тут
   }
 
   @Override

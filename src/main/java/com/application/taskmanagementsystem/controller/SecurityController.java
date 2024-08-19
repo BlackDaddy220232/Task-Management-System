@@ -28,7 +28,8 @@ public class SecurityController {
   }
 
   @PostMapping("/signin")
-  public String signin(@RequestBody @Valid SignInRequest signInRequest, HttpServletResponse response) {
+  public String signin(
+      @RequestBody @Valid SignInRequest signInRequest, HttpServletResponse response) {
     String token = securityService.login(signInRequest);
     Cookie cookie = new Cookie("token", token);
     cookie.setHttpOnly(true);
@@ -40,7 +41,7 @@ public class SecurityController {
 
   @PatchMapping("/editPassword")
   public ResponseEntity<String> editPassword(
-          @Valid @RequestBody PasswordRequest passwordRequest, HttpServletRequest request) {
+      @Valid @RequestBody PasswordRequest passwordRequest, HttpServletRequest request) {
     securityService.changePassword(passwordRequest, request);
     return ResponseEntity.ok("Password was successfully updated");
   }

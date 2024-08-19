@@ -86,8 +86,6 @@ class UserServiceTest {
     }
     @Test
     void getTaskByUserId_PriorityAndStatusNotNull_ReturnsTasksByPriorityAndStatus() {
-        User user = new User();
-        user.setId(1L);
         Pageable pageable = PageRequest.of(0, 10);
         Page<Task> tasks = new PageImpl<>(Collections.emptyList());
 
@@ -102,8 +100,6 @@ class UserServiceTest {
 
     @Test
     void getTaskByUserId_PriorityNotNull_StatusNull_ReturnsTasksByPriority() {
-        User user = new User();
-        user.setId(1L);
         Pageable pageable = PageRequest.of(0, 10);
         Page<Task> tasks = new PageImpl<>(Collections.emptyList());
 
@@ -118,8 +114,6 @@ class UserServiceTest {
 
     @Test
     void getTaskByUserId_PriorityNull_StatusNotNull_ReturnsTasksByStatus() {
-        User user = new User();
-        user.setId(1L);
         Pageable pageable = PageRequest.of(0, 10);
         Page<Task> tasks = new PageImpl<>(Collections.emptyList());
 
@@ -134,8 +128,6 @@ class UserServiceTest {
 
     @Test
     void getTaskByUserId_PriorityNull_StatusNull_ReturnsAllTasks() {
-        User user = new User();
-        user.setId(1L);
         Pageable pageable = PageRequest.of(0, 10);
         Page<Task> tasks = new PageImpl<>(Collections.emptyList());
 

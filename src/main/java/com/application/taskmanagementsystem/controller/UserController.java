@@ -9,13 +9,10 @@ import com.application.taskmanagementsystem.model.enumeration.Priority;
 import com.application.taskmanagementsystem.model.enumeration.Status;
 import com.application.taskmanagementsystem.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,10 +52,10 @@ public class UserController {
   public ResponseEntity<Page<Task>> getTasksByUserID(
       @RequestParam("offset") @Min(0) Integer offset,
       @RequestParam("limit") @Min(1) Integer limit,
-      @RequestParam (required = false)Status status,
-      @RequestParam (required = false)Priority priority,
+      @RequestParam(required = false) Status status,
+      @RequestParam(required = false) Priority priority,
       @PathVariable Long id) {
-    return ResponseEntity.ok(userService.getTaskByUserId(id,offset,limit,status,priority));
+    return ResponseEntity.ok(userService.getTaskByUserId(id, offset, limit, status, priority));
   }
 
   @PostMapping("/task/{id}/comment")

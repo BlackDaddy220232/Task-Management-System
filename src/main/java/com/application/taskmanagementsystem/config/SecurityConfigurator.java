@@ -45,7 +45,7 @@ public class SecurityConfigurator {
   public static final String TASK_STATUS_URL = "/user/task/{id}/status";
   public static final String TASK_EDIT_URL = "/user/task/{id}";
   public static final String TASK_DELETE_URL = "/user/task/{id}";
-  public static final String EMPLOYER="EMPLOYER";
+  public static final String EMPLOYER = "EMPLOYER";
   public static final HttpMethod POST_METHOD = HttpMethod.POST;
   public static final HttpMethod PATCH_METHOD = HttpMethod.PATCH;
   public static final HttpMethod GET_METHOD = HttpMethod.GET;
@@ -105,7 +105,9 @@ public class SecurityConfigurator {
             exceptions -> exceptions.authenticationEntryPoint(authenticationEntryPoint))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
+        .authorizeHttpRequests(
+            authorize ->
+                authorize
                     .requestMatchers(POST_METHOD, SIGNUP_URL, SIGNIN_URL)
                     .permitAll()
                     .requestMatchers(PATCH_METHOD, EDIT_PASSWORD_URL)
@@ -129,8 +131,10 @@ public class SecurityConfigurator {
                     .requestMatchers(PATCH_METHOD, TASK_EDIT_URL)
                     .hasAuthority(EMPLOYER)
                     .requestMatchers(DELETE_METHOD, TASK_DELETE_URL)
-                    .hasAuthority(EMPLOYER))
-            .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
+                    .hasAuthority(EMPLOYER)
+                    .anyRequest()
+                    .permitAll())
+        .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 }

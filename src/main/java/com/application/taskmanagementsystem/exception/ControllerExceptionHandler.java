@@ -42,7 +42,7 @@ public class ControllerExceptionHandler {
   @ExceptionHandler({
     NoHandlerFoundException.class,
     UserNotFoundException.class,
-          TaskNotFoundException.class,
+    TaskNotFoundException.class,
   })
   @ResponseStatus(HttpStatus.NOT_FOUND)
   public ResponseError handleNoResourceFoundException(RuntimeException ex, WebRequest request) {
@@ -58,7 +58,11 @@ public class ControllerExceptionHandler {
     return new ResponseError(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage());
   }
 
-  @ExceptionHandler({ExpiredJwtException.class, AccessDeniedException.class,UnauthorizedException.class})
+  @ExceptionHandler({
+    ExpiredJwtException.class,
+    AccessDeniedException.class,
+    UnauthorizedException.class
+  })
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public ResponseError handleUnauthorizedException(RuntimeException ex, WebRequest request) {
     log.error("Error 403: Forbidden");
@@ -71,44 +75,50 @@ public class ControllerExceptionHandler {
     log.error("Error 500: Internal Server Error");
     return new ResponseError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
   }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseError handleInvalidArgument(MethodArgumentNotValidException ex){
+  public ResponseError handleInvalidArgument(MethodArgumentNotValidException ex) {
     StringBuilder errorMessageBuilder = new StringBuilder();
-    ex.getBindingResult().getFieldErrors().forEach(error ->
-            errorMessageBuilder.append(error.getDefaultMessage())
-                    .append("; ")
-    );
+    ex.getBindingResult()
+        .getFieldErrors()
+        .forEach(error -> errorMessageBuilder.append(error.getDefaultMessage()).append("; "));
     String errorMessage = errorMessageBuilder.toString().trim();
     log.error("Error 400: Bad Request");
     return new ResponseError(HttpStatus.BAD_REQUEST, errorMessage);
   }
+
   @ExceptionHandler({UserTakenException.class, TaskTakenException.class})
   @ResponseStatus(HttpStatus.CONFLICT)
   public ResponseError handleConflictExceptions(Exception ex, WebRequest request) {
     log.error("Error 409: Conflict");
     return new ResponseError(HttpStatus.CONFLICT, ex.getMessage());
   }
+
   @ExceptionHandler({HttpMessageNotReadableException.class})
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ResponseError handleNotReadableExceptions(HttpMessageNotReadableException ex, WebRequest request){
+  public ResponseError handleNotReadableExceptions(
+      HttpMessageNotReadableException ex, WebRequest request) {
     Pattern pattern = Pattern.compile("\\[(.*?)]");
     Matcher matcher = pattern.matcher(ex.getMessage());
     String errorMessage;
-    if(matcher.find()){
-      errorMessage=matcher.group(1);
-    }
-    else {
-      errorMessage="Field cannot be empty";
+    if (matcher.find()) {
+      errorMessage = matcher.group(1);
+    } else {
+      errorMessage = "Field cannot be empty";
     }
     log.error("Error 400: Bad request");
-    return new ResponseError(HttpStatus.BAD_REQUEST, String.format("Invalid argument: %s", errorMessage));
+    return new ResponseError(
+        HttpStatus.BAD_REQUEST, String.format("Invalid argument: %s", errorMessage));
   }
-  @ExceptionHandler({MethodArgumentTypeMismatchException.class, MissingServletRequestParameterException.class})
+
+  @ExceptionHandler({
+    MethodArgumentTypeMismatchException.class,
+    MissingServletRequestParameterException.class
+  })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ResponseError handleTypeMismatch(Exception ex) {
     log.error("Error 400: Bad request");
     return new ResponseError(HttpStatus.BAD_REQUEST, "Invalid argument!");
   }
-
 }

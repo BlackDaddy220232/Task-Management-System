@@ -10,12 +10,13 @@ import java.util.List;
 @Service
 @Transactional
 public class TaskService {
-    private final TaskRepository taskRepository;
+  private final TaskRepository taskRepository;
 
-    public TaskService(TaskRepository taskRepository){
-        this.taskRepository=taskRepository;
-    }
-    public List<Task> getAllTasks(){
-        return taskRepository.findAll();
-    }
+  public TaskService(TaskRepository taskRepository) {
+    this.taskRepository = taskRepository;
+  }
+
+  public List<Task> getAllTasks() {
+    return taskRepository.findAll();
+  }
 }

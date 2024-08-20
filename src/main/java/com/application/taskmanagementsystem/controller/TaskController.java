@@ -1,6 +1,7 @@
 package com.application.taskmanagementsystem.controller;
 
 import com.application.taskmanagementsystem.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ public class TaskController {
     this.taskService = taskService;
   }
 
+  @Operation(summary = "Get all tasks")
   @GetMapping("/all")
   public ResponseEntity<Object> getAllTasks() {
     return ResponseEntity.ok(taskService.getAllTasks());

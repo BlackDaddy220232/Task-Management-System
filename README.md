@@ -152,7 +152,7 @@ GET /task/all
 ```bash
 cd Task-Management-System\
 ```
-#### 3. Open ``.env```****
+#### 3. Open ```.env```
 
 #### 4. Please provide your username and password.
 
@@ -208,6 +208,8 @@ You can customize the application's behavior by modifying the `application.prope
 ## Tests
 
 The service layer of the "Weather Application" application has **100% unit test coverage**. This means that every method and code path in the service layer is thoroughly tested, ensuring the correctness of the application's core functionality.
+
+![Test Coverage](testCoverage.png)
 
 ## Security
 This application implements several security measures to protect the weather API integration:

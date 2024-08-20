@@ -145,25 +145,81 @@ GET /task/all
 
 #### 2. Navigate into the cloned directory
 ```bash
-cd Weather-App\src\main\resources
+cd Task-Management-System\
 ```
-#### 2. Launch ```Setup.bat```
+#### 3. Open ``.env```****
+
+#### 4. Please provide your username and password.
+
+#### 5.Navigate to this folder
+
+```
+cd src\main\resources
+```
+#### 6. Open ```application.properties```****
+
+#### 7. Please provide JWT secket, duration of session in the designated fields.
+
+#### 8. Choose ```create``` or ```update``` in the field ```spring.jpa.hibernate.ddl-auto```.
+
+### For Docker:
+
+#### 1. Execute the Maven command to clean the project and then build it
 ```bash
-Setup.bat
+mvn clean install -DskipTests
 ```
-#### 3. Open ```application.properties```****
-
-#### 4. Please provide your username and password, API key, JWT secket, duration of session in the designated fields.
-
-#### 5. Choose ```create``` or ```create-drop``` in the field ```spring.jpa.hibernate.ddl-auto```.
-
-#### 6. Open pgAdmin and create database with name ```BlogPlatform```
-
-#### 7. Execute the Maven command to clean the project and then build it
+#### 2. Run the application in the Docker by this command:
+```bash
+docker-compose up --build
+```
+### For manual launch
+#### 1. Open pgAdmin and create database with name ```BlogPlatform```
+#### 2. Execute the Maven command to clean the project and then build it
 ```bash
 mvn clean install
 ```
-#### 8. run the application using the following Java command:
+#### 3. run the application using the following Java command:
 ```bash
-java -jar \target\Weather-0.0.1-SNAPSHOT.jar
+java -jar \target\taskmanagementsystem-0.0.1-SNAPSHOT.jar
 ```
+## Technologies and Frameworks
+The Weather Application is built using the following technologies and frameworks:
+
+* Spring Framework
+   
+* Spring Security
+   
+* JWT (JSON Web Tokens)
+  
+* Unit Testing
+* Logging and Aspect-Oriented Programming
+* Caching
+* Spring Boot
+
+## Configuration
+
+You can customize the application's behavior by modifying the `application.properties` file located in the `src/main/resources` directory. In this file, you can configure settings such as the time_of_session, and secret of JWT token, and type of creating database (update, create, create-drop).
+
+## Tests
+
+The service layer of the "Weather Application" application has **100% unit test coverage**. This means that every method and code path in the service layer is thoroughly tested, ensuring the correctness of the application's core functionality.
+
+## Security
+This application implements several security measures to protect the weather API integration:
+
+### Authentication and Authorization
+The application uses JSON Web Tokens (JWT) for authentication and authorization. When a user logs in, the server generates a signed JWT token, sends it back to the client, and the client stores the token in a cookie. For all subsequent requests, the client must include the token from the cookie in the Authorization header.
+
+### Secure Cookies
+In addition to JWT tokens, the application also uses cookies to manage user sessions. The session cookies are marked as HttpOnly and Secure, ensuring they can only be accessed by the server and transmitted over HTTPS.
+## Contributing
+
+Contributions are welcome! If you find any issues or want to add new features, please submit a pull request.
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for more information.
+
+## Author
+
+This application was developed by Alexander Mynzul.

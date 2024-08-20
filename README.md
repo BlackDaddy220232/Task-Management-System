@@ -10,7 +10,12 @@ This project is integrated with the Sonor Cloud platform, which provides advance
 
 ## API Reference
 ### Postman
-To interact with the "Weather Application" application's RESTful API endpoints, you can use the Postman request by this [link](https://www.postman.com/material-saganist-75818563/workspace/task-management-system). Tap ```create a fork``` and use Postman for doing request.
+To interact with the "Weather Application" application's RESTful API endpoints, you can use the Postman request by this [link](https://www.postman.com/material-saganist-75818563/workspace/task-management-system). 
+
+Tap ```create a fork``` and use Postman for doing request.
+
+
+#### Register
 
 ```http
 POST /auth/signup

@@ -212,7 +212,7 @@ The service layer of the "Weather Application" application has **100% unit test 
 ![Test Coverage](testCoverage.png)
 
 ## Security
-This application implements several security measures to protect the weather API integration:
+This application implements several security measures to protect:
 
 ### Authentication and Authorization
 The application uses JSON Web Tokens (JWT) for authentication and authorization. When a user logs in, the server generates a signed JWT token, sends it back to the client, and the client stores the token in a cookie. For all subsequent requests, the client must include the token from the cookie in the Authorization header.
